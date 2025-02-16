@@ -6,9 +6,18 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-if (!isset($_ENV['EMAIL_USER']) || !isset($_ENV['EMAIL_PASS'])) {
+// Получаем переменные окружения безопасно
+$emailUser = getenv('EMAIL_USER') ?: ($_SERVER['EMAIL_USER'] ?? null);
+$emailPass = getenv('EMAIL_PASS') ?: ($_SERVER['EMAIL_PASS'] ?? null);
+
+if (!$emailUser || !$emailPass) {
     die('Email credentials are missing! Please set EMAIL_USER and EMAIL_PASS in the .env file.');
 }
 
-echo 'EMAIL_USER: ' . $_ENV['EMAIL_USER'] . PHP_EOL;
-echo 'EMAIL_PASS: ' . ($_ENV['EMAIL_PASS'] ? '********' : 'NOT SET') . PHP_EOL;
+// Включить вывод данных только в режиме отладки
+$debug = getenv('DEBUG') ?: false;
+
+if ($debug) {
+    echo 'EMAIL_USER: ' . ($emailUser ?: 'NOT SET') . PHP_EOL;
+    echo 'EMAIL_PASS: ' . ($emailPass ? '********' : 'NOT SET') . PHP_EOL;
+}
